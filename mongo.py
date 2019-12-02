@@ -1,11 +1,16 @@
+import os
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from dotenv import load_dotenv
+
+load_dotenv()
+url_mongo_atlas = os.getenv('URL_ATLAS')
 
 class DatabaseConnection:
 
     def __init__(self,dbName):
         print('Initializing database...')
-        self.client = MongoClient()
+        self.client = MongoClient(url_mongo_atlas)
         self.db = self.client[dbName]
         self.users = self.db['users']
         self.chats = self.db['chats']

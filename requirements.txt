@@ -1,5 +1,4 @@
 bottle
 pymongo
-bson
 matplotlib
 numpy
