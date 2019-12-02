@@ -2,6 +2,7 @@ from bottle import route, run, get, post, request
 from mongo import DatabaseConnection
 from recommender import recommendFriends
 import json
+import os
 
 @get("/")
 def index():
@@ -53,4 +54,4 @@ def analyzeMessages(chat_id):
         'sentiments': db.sentimentAnalysis(chat_id)}
 
 db = DatabaseConnection('ChatDatabase')
-run(host='0.0.0.0', port=8080)
+run(host='0.0.0.0', port=int(os.environ.get("PORT", 8080)))
