@@ -1,9 +1,7 @@
 import os
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from dotenv import load_dotenv
 
-load_dotenv()
 url_mongo_atlas = os.getenv('URL_ATLAS')
 
 class DatabaseConnection:
