@@ -3,6 +3,12 @@ from mongo import DatabaseConnection
 from recommender import recommendFriends
 import json
 
+@get("/")
+def index():
+    return {
+        "Hello":"world!"
+    }
+
 @post('/user/create')
 def createUser():
     username = request.forms.get('username')
