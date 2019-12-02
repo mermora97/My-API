@@ -2,3 +2,4 @@ bottle
 pymongo
 matplotlib
 numpy
+dnspython
