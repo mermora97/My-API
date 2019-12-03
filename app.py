@@ -6,12 +6,12 @@ import json
 import os
 
 def slackToMongo(col,query):
-    if len(col.find(query)) == 0:
+    if len(list(col.find(query))) == 0:
         return None
-    elif len(col.find(query)) == 1:
+    elif len(list(col.find(query))) == 1:
         return str(col.find(query)[0]['_id'])
     else:
-        return [str(e['_id']) for e in col.find(query)]
+        return [str(e['_id']) for e in list(col.find(query))]
 
 
 @route("/")
