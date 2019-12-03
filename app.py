@@ -5,6 +5,15 @@ from slack import SlackApp
 import json
 import os
 
+def slackToMongo(col,query):
+    if len(col.find(query)) == 0:
+        return None
+    elif len(col.find(query)) == 1:
+        return str(col.find(query)[0]['_id'])
+    else:
+        return [str(e['_id']) for e in col.find(query)]
+
+
 @route("/")
 def index():
     return "Hello world!"
@@ -22,7 +31,7 @@ def recommendFriend(user_id):
 
 @post('/chat/create')
 def createChat():
-    users = request.forms.getlist('user_id')
+    users = request.forms.getlist('user_id_list')
     return {
         'chat_id':str(db.createChat(users))}
 
@@ -61,18 +70,28 @@ def slackConnect(slack_token):
         return 'Error in slack identification'
 
 @get('/slack/<slack_token>/users/list')
-def getUsersList(slack_token):
+def getUsersListFromSlack(slack_token):
     slack = SlackApp(slack_token)
-    name_filter = request.forms.get('filter','')
-    save = request.forms.get('save',False)
+    name_filter = request.forms.get('name_filter','')
     
-    usersList = slack.getTeamUsers(name_filter)
-    if save:
-        usersIdList = []
-        for user in usersList:
-            usersIdList.append({'user_id':str(db.createUser(user))})
-            return {'results':usersIdList, 'total_results':len(usersIdList)}
-    return {'results':usersList, 'total_results':len(usersList)}
+    users_list = slack.getTeamUsers(name_filter)
+    for idx,user in enumerate(users_list):
+        users_list[idx]['user_id'] = str(db.createUser(data=user))
+    return {'results':users_list, 'total_results':len(users_list)}
+
+@post('/slack/<slack_token>/post/message&channel=<channel>&text=<text>')
+def getUsersList(slack_token,channel,text):
+    slack = SlackApp(slack_token)
+    res = slack.postMessage(text,channel)
+    
+    chat_id = slackToMongo(db.chats,{'slack_channel':channel})
+    if chat_id:
+        addMessage(chat_id, data={'user_id'=self.currentUser,'text'=text})
+    else:
+        chat_id = createChat(data={'user_id_list':[self.currentUser, res.get('message').get('user')})
+        addMessage(chat_id, data={'user_id'=self.currentUser,'text'=text})
+
+    return {'chat_id':chat_id}
 
 db = DatabaseConnection('ChatDatabase')
 run(host='0.0.0.0', port=int(os.environ.get("PORT", 8080)))

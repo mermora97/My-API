@@ -1,13 +1,17 @@
 from slacker import Slacker
+import json
+import requests
 
 class SlackApp:
 
     def __init__(self,slack_token):
         print('Connecting to Slack application...')
+        self.token = slack_token
         self.slack = Slacker(slack_token)
         testAuth = self.slack.auth.test().body
         self.team = testAuth['team']
         self.currentUser = testAuth['user']
+        self.url = 'https://slack.com/api/chat'
 
     def getTeamUsers(self,name_filter = ''):
         users = self.slack.users.list().body['members']
@@ -24,3 +28,6 @@ class SlackApp:
                 usersList.append(user_doc)
         return usersList
     
+    def postMessage(self,channel,text):
+        url = f'{self.url}.postMessage?token={self.token}&channel={channel}&text={text}&as_user=True&pretty=1'
+        return requests.post(url).json()
