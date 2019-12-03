@@ -56,7 +56,7 @@ def analyzeMessages(chat_id):
 def slackConnect(slack_token):
     try:
         slack = SlackApp(slack_token)
-        return 'Successfully authenticated for team {0} and user {1} ".format(slack.team, slack.currentUser))
+        return 'Successfully authenticated for team {0} and user {1}.'.format(slack.team, slack.currentUser)
     except:
         return 'Error in slack identification'
 
