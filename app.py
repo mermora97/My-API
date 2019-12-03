@@ -74,6 +74,8 @@ def getUsersListFromSlack(slack_token):
     name_filter = request.forms.get('name_filter','')
     
     users_list = slack.getTeamUsers(name_filter)
+    print('Searching for slack users...')
+    print(f'{len(users_list)} users found in slack')
     for idx,user in enumerate(users_list):
         user_id = str(db.createUser(user))
         users_list[idx]['user_id'] = user_id
@@ -94,7 +96,9 @@ def postSlackMessage(slack_token,channel,text):
     if chat_id:
         db.addMessage(self.currentUser,chat_id,text)
     else:
-        chat_id = db.createChat([self.currentUser, res.get('message').get('user')])
+        print('Chat not found...')
+        print('Chat not found. Creating chat...')
+        chat_id = str(db.createChat([self.currentUser, res.get('message').get('user')]))
         db.addMessage(self.currentUser,chat_id,text)
     return {'chat_id':chat_id}
 

@@ -46,10 +46,10 @@ class SlackApp:
         channels = []
         for idx,group in enumerate(self.slack.groups.list().body['groups']):
             channels[idx] = {'slack_channel':group['id'],'name':group['name'], 'members':group['members']}
-            messages = []
+            '''messages = []
             print("Getting history for private channel {0} with id {1}".format(group['name'], group['id']))
             messages = getMessages(slack.groups, group['id'])
-            channels[idx]['messages'] = [m['text'] for m in messages]
+            channels[idx]['messages'] = [m['text'] for m in messages]'''
         return channels
 
     def postMessage(self,channel,text):
