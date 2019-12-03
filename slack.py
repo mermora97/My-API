@@ -28,6 +28,16 @@ class SlackApp:
                 usersList.append(user_doc)
         return usersList
     
+    def getPrivateChannels(slack):
+        channels = []
+        for idx,group in enumerate(slack.groups.list().body['groups']):
+            channels[idx] = {'slack_channel':group['id'],'name':group['name'], 'members':group['members']}
+            messages = []
+            print("Getting history for private channel {0} with id {1}".format(group['name'], group['id']))
+            messages = getHistory(slack.groups, group['id'])
+            channels[idx]['messages'] = [m['text'] for m in messages]
+        return channels
+
     def postMessage(self,channel,text):
         url = f'{self.url}.postMessage?token={self.token}&channel={channel}&text={text}&as_user=True&pretty=1'
         return requests.post(url).json()
