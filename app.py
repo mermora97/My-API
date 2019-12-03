@@ -18,6 +18,11 @@ def slackToMongo(col,query):
 def index():
     return "Welcome to my api!"
 
+@get('/user_id')
+def getUserId():
+    user = dict([i for i in request.forms.items()])    
+    return slackToMongo(col,query)
+
 @post('/user/create')
 def createUser():
     user = dict([i for i in request.forms.items()])
@@ -94,11 +99,11 @@ def postSlackMessage(slack_token,channel,text):
     
     chat_id = slackToMongo(db.chats,{'slack_channel':channel})
     if chat_id:
-        db.addMessage(db.currentUser,chat_id,text)
+        db.addMessage(slack.currentUser,chat_id,text)
     else:
         print('Chat not found. Creating chat...')
-        chat_id = str(db.createChat([db.currentUser, res.get('message').get('user')]))
-        db.addMessage(db.currentUser,chat_id,text)
+        chat_id = str(db.createChat([slack.currentUser, res.get('message').get('user')]))
+        db.addMessage(slack.currentUser,chat_id,text)
     return {'chat_id':chat_id}
 
 db = DatabaseConnection('ChatDatabase')

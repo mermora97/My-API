@@ -14,6 +14,7 @@ class DatabaseConnection:
         self.chats = self.db['chats']
 
     def createUser(self,user):
+        print('Inserting user...', user)
         doc = self.users.insert_one(user)
         return doc.inserted_id
     
