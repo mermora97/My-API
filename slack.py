@@ -44,7 +44,8 @@ class SlackApp:
     
     def getPrivateChannels(self):
         channels = []
-        for idx,group in enumerate(self.slack.groups.list().body['groups']):
+        groups = self.slack.groups.list().body['groups']
+        for idx,group in enumerate(groups):
             channels.append({
                 'slack_channel':group['id'],
                 'name':group['name'], 
@@ -52,7 +53,7 @@ class SlackApp:
             
             messages = []
             print("Getting history for private channel {0} with id {1}".format(group['name'], group['id']))
-            messages = self.getMessages(self.slack.groups, group['id'])
+            messages = self.getMessages(groups, group['id'])
             channels[idx]['messages'] = [m['text'] for m in messages]
         return channels
 
