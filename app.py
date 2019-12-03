@@ -95,7 +95,7 @@ def getUsersList(slack_token,channel,text):
     if chat_id:
         addMessage(chat_id, data={'user_id':self.currentUser,'text':text})
     else:
-        chat_id = createChat(data={'user_id_list':[self.currentUser, res.get('message').get('user')})
+        chat_id = createChat(data={'user_id_list':[self.currentUser, res.get('message').get('user')]})
         addMessage(chat_id, data={'user_id':self.currentUser,'text':text})
 
     return {'chat_id':chat_id}
