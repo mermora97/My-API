@@ -84,18 +84,23 @@ def getUsersListFromSlack(slack_token):
     for idx,user in enumerate(users_list):
         user_id = str(db.createUser(user))
         users_list[idx]['user_id'] = user_id
-    return {'results':users_list, 'total_results':len(users_list)}
+    return {'results':users_list, 'total_results':len(users_list.items())}
 
 @get('/slack/<slack_token>/channels')
 def getSlackChannels(slack_token):
     slack = SlackApp(slack_token)
-    #Pasar esto a una conversacion
-    return {'results':slack.getPrivateChannels()}
+    channels = slack.getPrivateChannels()
+    return {'results':channels,'total_results':len(channels.items())}
 
 @post('/slack/<slack_token>/post/message&channel=<channel>&text=<text>')
 def postSlackMessage(slack_token,channel,text):
     slack = SlackApp(slack_token)
     res = slack.postMessage(text,channel)
+
+    if res.get('ok'):
+        print('Message sent')
+    else:
+        return TypeError('Message error, could not be sent')
     
     chat_id = slackToMongo(db.chats,{'slack_channel':channel})
     if chat_id:
