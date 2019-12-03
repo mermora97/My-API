@@ -76,7 +76,8 @@ def getUsersListFromSlack(slack_token):
     
     users_list = slack.getTeamUsers(name_filter)
     for idx,user in enumerate(users_list):
-        users_list[idx]['user_id'] = str(db.createUser(data=user))
+        user_id = str(db.createUser(data = user))
+        users_list[idx]['user_id'] = user_id
     return {'results':users_list, 'total_results':len(users_list)}
 
 @post('/slack/<slack_token>/post/message&channel=<channel>&text=<text>')
@@ -89,7 +90,7 @@ def getUsersList(slack_token,channel,text):
         addMessage(chat_id, data={'user_id'=self.currentUser,'text'=text})
     else:
         chat_id = createChat(data={'user_id_list':[self.currentUser, res.get('message').get('user')})
-        addMessage(chat_id, data={'user_id'=self.currentUser,'text'=text})
+        addMessage(chat_id, data={'user_id':self.currentUser,'text':text})
 
     return {'chat_id':chat_id}
 
