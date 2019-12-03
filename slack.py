@@ -27,14 +27,28 @@ class SlackApp:
                     }
                 usersList.append(user_doc)
         return usersList
+
+    def getMessages(pageableObject, channel, pageSize = 100):
+        messages = []
+        lastTimestamp = None
+
+        while(True):
+            response = pageableObject.history(channel = channelId,latest  = lastTimestamp,oldest  = 0,count   = pageSize).body
+            messages.extend(response['messages'])
+
+            if (response['has_more'] == True):
+                lastTimestamp = messages[-1]['ts']
+            else:
+                break
+        return messages
     
-    def getPrivateChannels(slack):
+    def getPrivateChannels(self):
         channels = []
-        for idx,group in enumerate(slack.groups.list().body['groups']):
+        for idx,group in enumerate(self.slack.groups.list().body['groups']):
             channels[idx] = {'slack_channel':group['id'],'name':group['name'], 'members':group['members']}
             messages = []
             print("Getting history for private channel {0} with id {1}".format(group['name'], group['id']))
-            messages = getHistory(slack.groups, group['id'])
+            messages = getMessages(slack.groups, group['id'])
             channels[idx]['messages'] = [m['text'] for m in messages]
         return channels
 
