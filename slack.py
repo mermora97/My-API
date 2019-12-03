@@ -52,7 +52,7 @@ class SlackApp:
             
             messages = []
             print("Getting history for private channel {0} with id {1}".format(group['name'], group['id']))
-            messages = getMessages(slack.groups, group['id'])
+            messages = self.getMessages(self.slack.groups, group['id'])
             channels[idx]['messages'] = [m['text'] for m in messages]
         return channels
 

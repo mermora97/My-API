@@ -83,8 +83,7 @@ def getUsersListFromSlack(slack_token):
     print(f'{len(users_list)} users found in slack')
     for idx,user in enumerate(users_list):
         user_id = db.createUser(user)
-        users_list[idx]['user_id'] = user_id
-    print('Users...',users_list)
+        users_list[idx]['_id'] = str(user_id)
     return {'results':users_list, 'total_results':len(users_list)}
 
 @get('/slack/<slack_token>/channels')
