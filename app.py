@@ -99,7 +99,7 @@ def postSlackMessage(slack_token,channel,text):
     slack = SlackApp(slack_token)
     res = slack.postMessage(text,channel)
 
-    print('Response...'res)
+    print('Response...',res)
     if res.get('ok'):
         print('Message sent')
     else:
