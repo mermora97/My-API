@@ -71,7 +71,7 @@ def slackConnect(slack_token):
 @get('/slack/<slack_token>/users/list')
 def getUsersListFromSlack(slack_token):
     slack = SlackApp(slack_token)
-    name_filter = request.forms.get('name_filter','')
+    name_filter = request.forms.get('filter','')
     
     users_list = slack.getTeamUsers(name_filter)
     print('Searching for slack users...')
@@ -81,8 +81,8 @@ def getUsersListFromSlack(slack_token):
         users_list[idx]['user_id'] = user_id
     return {'results':users_list, 'total_results':len(users_list)}
 
-@get('/slack/<slack_token>/channels,privaty=<privaty>')
-def getSlackChannels(slack_token, privaty=True):
+@get('/slack/<slack_token>/channels')
+def getSlackChannels(slack_token):
     slack = SlackApp(slack_token)
     #Pasar esto a una conversacion
     return {'results':slack.getPrivateChannels()}
@@ -94,12 +94,11 @@ def postSlackMessage(slack_token,channel,text):
     
     chat_id = slackToMongo(db.chats,{'slack_channel':channel})
     if chat_id:
-        db.addMessage(self.currentUser,chat_id,text)
+        db.addMessage(db.currentUser,chat_id,text)
     else:
-        print('Chat not found...')
         print('Chat not found. Creating chat...')
-        chat_id = str(db.createChat([self.currentUser, res.get('message').get('user')]))
-        db.addMessage(self.currentUser,chat_id,text)
+        chat_id = str(db.createChat([db.currentUser, res.get('message').get('user')]))
+        db.addMessage(db.currentUser,chat_id,text)
     return {'chat_id':chat_id}
 
 db = DatabaseConnection('ChatDatabase')
