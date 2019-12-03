@@ -16,7 +16,7 @@ def slackToMongo(col,query):
 
 @route("/")
 def index():
-    return "Hello world!"
+    return "Welcome to my api!"
 
 @post('/user/create')
 def createUser():
@@ -31,7 +31,7 @@ def recommendFriend(user_id):
 
 @post('/chat/create')
 def createChat():
-    users = request.forms.getlist('user_id_list')
+    users = request.forms.getlist('users_list')
     return {
         'chat_id':str(db.createChat(users))}
 
@@ -80,6 +80,12 @@ def getUsersListFromSlack(slack_token):
         users_list[idx]['user_id'] = user_id
     return {'results':users_list, 'total_results':len(users_list)}
 
+@get('/slack/<slack_token>/channels,privaty=<privaty>')
+def getSlackChannels(slack_token, privaty=True):
+    slack = SlackApp(slack_token)
+    #Pasar esto a una conversacion
+    return {'results':slack.getPrivateChannels()}
+
 @post('/slack/<slack_token>/post/message&channel=<channel>&text=<text>')
 def getUsersList(slack_token,channel,text):
     slack = SlackApp(slack_token)
@@ -87,7 +93,7 @@ def getUsersList(slack_token,channel,text):
     
     chat_id = slackToMongo(db.chats,{'slack_channel':channel})
     if chat_id:
-        addMessage(chat_id, data={'user_id'=self.currentUser,'text'=text})
+        addMessage(chat_id, data={'user_id':self.currentUser,'text':text})
     else:
         chat_id = createChat(data={'user_id_list':[self.currentUser, res.get('message').get('user')})
         addMessage(chat_id, data={'user_id':self.currentUser,'text':text})
