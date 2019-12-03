@@ -82,22 +82,22 @@ def getUsersListFromSlack(slack_token):
     print('Searching for slack users...')
     print(f'{len(users_list)} users found in slack')
     for idx,user in enumerate(users_list):
-        user_id = str(db.createUser(user))
+        user_id = db.createUser(user)
         users_list[idx]['user_id'] = user_id
+    print('Users...',users_list)
     return {'results':users_list, 'total_results':len(users_list)}
 
 @get('/slack/<slack_token>/channels')
 def getSlackChannels(slack_token):
     slack = SlackApp(slack_token)
     channels = slack.getPrivateChannels()
-    print('Channels found---', channels)
     print(f'{len(channels)} channels found---')
     return {'results':channels,'total_results':len(channels)}
 
 @post('/slack/<slack_token>/post/message&channel=<channel>&text=<text>')
 def postSlackMessage(slack_token,channel,text):
     slack = SlackApp(slack_token)
-    res = slack.postMessage(text,channel)
+    res = slack.postMessage(channel,text)
 
     print('Response...',res)
     if res.get('ok'):

@@ -14,19 +14,18 @@ class DatabaseConnection:
         self.chats = self.db['chats']
 
     def createUser(self,user):
-        print('Inserting user...', user)
         doc = self.users.insert_one(user)
-        return doc.inserted_id
+        return str(doc.inserted_id)
     
     def createChat(self,users):
         doc = self.chats.insert_one({'users':users})
-        return doc.inserted_id
+        return str(doc.inserted_id)
     
     def addUserToChat(self,user,chat):
         chat_doc = self.chats.find({'_id':ObjectId(chat)})[0]
         chat_doc['users'].append(user)
         self.chats.update_one({'_id':ObjectId(chat)},{'$set':{'users':chat_doc['users']}})
-        return chat_doc['_id']
+        return str(chat_doc['_id'])
 
     def checkUserInChat(self,user,chat):
         chat_doc = self.chats.find({'_id':ObjectId(chat)})[0]
@@ -42,7 +41,7 @@ class DatabaseConnection:
             chat_doc = self.chats.find({'_id':ObjectId(chat)})[0]
             chat_doc['messages'].append(text)
             self.chats.update_one({'_id':ObjectId(chat)},{'$set':{'messages':chat_doc['messages']}})
-            return chat_doc['_id']
+            return str(chat_doc['_id'])
         except ValueError as e:
             return ValueError(e)
         
