@@ -11,9 +11,16 @@ class SlackApp:
 
     def getTeamUsers(self,name_filter = ''):
         users = self.slack.users.list().body['members']
-        userIdNameMap = {}
+        usersList = []
         for user in users:
             if name_filter in user['profile'].get('display_name',[]) or name_filter in user.get('real_name',[]):
-                userIdNameMap[user['id']] = user
-        return userIdNameMap
+                user_doc = {
+                    'name':user.get('real_name',user.get('name')),
+                    'slack_id':user.get('id'),
+                    'email':user.get('profile').get('email'),
+                    'phone':user.get('profile').get('phone'),
+                    'status':user.get('profile').get('title')
+                    }
+                usersList.append(user_doc)
+        return usersList
     

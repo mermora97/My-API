@@ -69,13 +69,9 @@ def getUsersList(slack_token):
     usersList = slack.getTeamUsers(name_filter)
     if save:
         usersIdList = []
-        for id,user in usersList.items():
-            user_doc = {'name':user.get('real_name',user.get('name')),
-                'slack_id':user.get('id'),
-                'email':user.get('profile').get('email'),
-                'phone':user.get('profile').get('phone'),
-                'status':user.get('profile').get('title')}
+        for user in usersList:
             usersIdList.append(str(db.createUser(user)))
+            return userIdList
     return usersList
 
 db = DatabaseConnection('ChatDatabase')
