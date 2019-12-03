@@ -26,8 +26,7 @@ def createUser():
 
 @get('/user/<user_id>/recommend')
 def recommendFriend(user_id):
-    userName = db.find({'_id':user_id},{ name: 1, _id: 0 })
-    return recommendFriends(userName)
+    return recommendFriends(user_id)
 
 @post('/chat/create')
 def createChat():
@@ -76,7 +75,7 @@ def getUsersListFromSlack(slack_token):
     
     users_list = slack.getTeamUsers(name_filter)
     for idx,user in enumerate(users_list):
-        user_id = str(db.createUser(data = user))
+        user_id = str(db.createUser(user))
         users_list[idx]['user_id'] = user_id
     return {'results':users_list, 'total_results':len(users_list)}
 
@@ -87,16 +86,16 @@ def getSlackChannels(slack_token, privaty=True):
     return {'results':slack.getPrivateChannels()}
 
 @post('/slack/<slack_token>/post/message&channel=<channel>&text=<text>')
-def getUsersList(slack_token,channel,text):
+def postSlackMessage(slack_token,channel,text):
     slack = SlackApp(slack_token)
     res = slack.postMessage(text,channel)
     
     chat_id = slackToMongo(db.chats,{'slack_channel':channel})
     if chat_id:
-        addMessage(chat_id, data={'user_id':self.currentUser,'text':text})
+        db.addMessage(self.currentUser,chat_id,'text':text)
     else:
-        chat_id = createChat(data={'user_id_list':[self.currentUser, res.get('message').get('user')]})
-        addMessage(chat_id, data={'user_id':self.currentUser,'text':text})
+        chat_id = db.createChat([self.currentUser, res.get('message').get('user')])
+        db.addMessage(self.currentUser,chat_id, text)
 
     return {'chat_id':chat_id}
 
