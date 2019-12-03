@@ -70,9 +70,9 @@ def getUsersList(slack_token):
     if save:
         usersIdList = []
         for user in usersList:
-            usersIdList.append(str(db.createUser(user)))
-            return userIdList
-    return usersList
+            usersIdList.append({'user_id':str(db.createUser(user))})
+            return {'results':usersIdList, 'total_results':len(usersIdList)}
+    return {'results':usersList, 'total_results':len(usersList)}
 
 db = DatabaseConnection('ChatDatabase')
 run(host='0.0.0.0', port=int(os.environ.get("PORT", 8080)))
