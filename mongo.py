@@ -13,8 +13,8 @@ class DatabaseConnection:
         self.users = self.db['users']
         self.chats = self.db['chats']
 
-    def createUser(self,name):
-        doc = self.users.insert_one({'name':name})
+    def createUser(self,user):
+        doc = self.users.insert_one(user)
         return doc.inserted_id
     
     def createChat(self,users):

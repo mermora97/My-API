@@ -1,20 +1,19 @@
 from bottle import route, run, get, post, request
 from mongo import DatabaseConnection
 from recommender import recommendFriends
+from slack import SlackApp
 import json
 import os
 
-@get("/")
+@route("/")
 def index():
-    return {
-        "Hello":"world!"
-    }
+    return "Hello world!"
 
 @post('/user/create')
 def createUser():
-    username = request.forms.get('username')
+    user = dict([i for i in request.forms.items()])
     return {
-        'user_id':str(db.createUser(username))}
+        'user_id':str(db.createUser(user))}
 
 @get('/user/<user_id>/recommend')
 def recommendFriend(user_id):
@@ -52,6 +51,32 @@ def getMessages(chat_id):
 def analyzeMessages(chat_id):
     return {
         'sentiments': db.sentimentAnalysis(chat_id)}
+
+@route('/slack/<slack_token>/connect')
+def slackConnect(slack_token):
+    try:
+        slack = SlackApp(slack_token)
+        return 'Successfully authenticated for team {0} and user {1} ".format(slack.team, slack.currentUser))
+    except:
+        return 'Error in slack identification'
+
+@get('/slack/<slack_token>/users/list')
+def getUsersList(slack_token):
+    slack = SlackApp(slack_token)
+    name_filter = request.forms.get('filter','')
+    save = request.forms.get('save',False)
+    
+    usersList = slack.getTeamUsers(name_filter)
+    if save:
+        usersIdList = []
+        for id,user in usersList.items():
+            user_doc = {'name':user.get('real_name',user.get('name')),
+                'slack_id':user.get('id'),
+                'email':user.get('profile').get('email'),
+                'phone':user.get('profile').get('phone'),
+                'status':user.get('profile').get('title')}
+            usersIdList.append(str(db.createUser(user)))
+    return usersList
 
 db = DatabaseConnection('ChatDatabase')
 run(host='0.0.0.0', port=int(os.environ.get("PORT", 8080)))

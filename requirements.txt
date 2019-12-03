@@ -3,3 +3,4 @@ pymongo
 matplotlib
 numpy
 dnspython
+slacker
