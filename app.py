@@ -92,11 +92,10 @@ def postSlackMessage(slack_token,channel,text):
     
     chat_id = slackToMongo(db.chats,{'slack_channel':channel})
     if chat_id:
-        db.addMessage(self.currentUser,chat_id,'text':text)
+        db.addMessage(self.currentUser,chat_id,text)
     else:
         chat_id = db.createChat([self.currentUser, res.get('message').get('user')])
-        db.addMessage(self.currentUser,chat_id, text)
-
+        db.addMessage(self.currentUser,chat_id,text)
     return {'chat_id':chat_id}
 
 db = DatabaseConnection('ChatDatabase')
